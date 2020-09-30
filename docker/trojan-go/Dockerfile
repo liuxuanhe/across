@@ -29,6 +29,5 @@ RUN set -ex \
 
 USER 1001
 
-EXPOSE 443, 8080
-
+EXPOSE 443
 CMD [ "/usr/bin/trojan-go", "-config", "/etc/trojan-go/config.json" ]
