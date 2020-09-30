@@ -7,18 +7,28 @@
 # https://github.com/v2ray/domain-list-community
 
 FROM alpine:latest
-LABEL maintainer="Teddysun <i@teddysun.com>"
+MAINTAINER Jay
 
-COPY trojan-go.sh /root/trojan-go.sh
-COPY config.json /etc/trojan-go/config.json
+ENV TZ=Asia/Shanghai
+
+# Select folder
+WORKDIR /app
+COPY . .
+
+# Assign authority
+RUN chgrp -R 0 . && \
+    chmod -R g=u .
+	
 RUN set -ex \
 	&& apk add --no-cache tzdata ca-certificates \
-	&& chmod +x /root/trojan-go.sh \
-	&& /root/trojan-go.sh \
-	&& rm -fv /root/trojan-go.sh \
+	&& chmod +x /app/trojan-go.sh \
+	&& /app/trojan-go.sh \
+	&& rm -fv /app/trojan-go.sh \
 	&& wget -O /usr/bin/geosite.dat https://github.com/v2ray/domain-list-community/releases/latest/download/dlc.dat \
 	&& wget -O /usr/bin/geoip.dat https://github.com/v2ray/geoip/releases/latest/download/geoip.dat
 
-VOLUME /etc/trojan-go
-ENV TZ=Asia/Shanghai
+USER 1001
+
+EXPOSE 443, 8080
+
 CMD [ "/usr/bin/trojan-go", "-config", "/etc/trojan-go/config.json" ]
